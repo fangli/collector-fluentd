@@ -167,7 +167,7 @@ def packs(obj, **kwargs):
     raise TypeError()
 
 
-class Unpacker():
+class Unpacker:
     def __init__(self, **kwargs):
         self.default_hook = kwargs.get('default')
         self.object_hook  = kwargs.get('object_hook')

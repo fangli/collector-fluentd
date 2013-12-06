@@ -5,7 +5,7 @@
 # @@ScriptName: common.py
 # @@Author: Felix Lee <surivlee@gmail.com>
 # @@Create Date: 12/26/2012
-# @@Modify Date: 2013-12-06 11:41:54
+# @@Modify Date: 2013-12-06 18:22:40
 # @@Function:
 #*********************************************************#
 
@@ -42,8 +42,9 @@ def log(message, level=0):
 
     if level >= level_defined:
         try:
-            with open(conf.LOG_FILE, 'a') as f:
-                f.write(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()) + ' ' + sLevel + ' ' + message + '\n')
+            f = open(conf.LOG_FILE, 'a')
+            f.write(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()) + ' ' + sLevel + ' ' + message + '\n')
+            f.close()
         except:
             pass
 

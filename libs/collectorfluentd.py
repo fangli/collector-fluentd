@@ -5,7 +5,7 @@
 # @@ScriptName: collectorfluentd.py
 # @@Author: Fang.Li<surivlee@gmail.com>
 # @@Create Date: 2013-12-05 14:21:57
-# @@Modify Date: 2013-12-06 18:19:15
+# @@Modify Date: 2013-12-06 18:38:42
 # @@Function:
 #*********************************************************#
 
@@ -71,6 +71,8 @@ class CollectorFluentd(object):
                 os.killpg(p.pid, signal.SIGTERM)
             except:
                 pass
+        g.get_exit_codes()
+        g.clear_finished()
 
         return outputs
 
