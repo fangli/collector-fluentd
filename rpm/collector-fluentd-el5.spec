@@ -6,7 +6,7 @@ Summary:        collector-fluentd is a large-scale system metric collecting tool
 Group:          Applications/Server
 License:        Apache Licence 2.0
 URL:            https://github.com/fangli/collector-fluentd
-SOURCE0:        https://github.com/fangli/collector-fluentd/releases/download/1.0/collector-fluentd-1.0.tar.gz
+SOURCE0:        https://github.com/fangli/collector-fluentd/releases/download/1.0/collector-fluentd.tar.gz
 BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
 %description
