@@ -1,0 +1,62 @@
+#!/bin/bash
+#
+# collector-fluentd   This scripts turns collector-fluentd on
+#
+# Author:       Fang Li <surivlee@gmail.com>
+#
+# chkconfig:    - 99 01
+#
+# description:  collector-fluentd  is a client deamon to collect system metrics for fluentd
+# processname:  collector-fluentd
+# config: /etc/collector-fluentd.conf
+# pidfile: /var/run/collector-fluentd.pid
+#
+
+# source function library
+. /etc/rc.d/init.d/functions
+
+RETVAL=0
+
+start() {
+        echo -n $"Starting collector-fluentd: "
+        daemon collector-fluentd -d -f /etc/collector-fluentd.conf
+        RETVAL=$?
+        echo
+        [ $RETVAL -eq 0 ] && touch /var/lock/subsys/collector-fluentd
+}
+
+stop() {
+        echo -n $"Stopping collector-fluentd: "
+        killproc collector-fluentd
+        echo
+        [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/collector-fluentd
+}
+
+restart() {
+        stop
+        start
+}
+
+case "$1" in
+  start)
+        start
+        ;;
+  stop) 
+        stop
+        ;;
+  restart|force-reload|reload)
+        restart
+        ;;
+  condrestart)
+        [ -f /var/lock/subsys/collector-fluentd ] && restart
+        ;;
+  status)
+        status collector-fluentd
+        RETVAL=$?
+        ;;
+  *)
+        echo $"Usage: $0 {start|stop|status|restart|reload|force-reload|condrestart}"
+        exit 1
+esac
+
+exit $RETVAL

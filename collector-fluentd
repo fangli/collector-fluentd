@@ -1,0 +1,106 @@
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+
+#*********************************************************#
+# @@ScriptName: collector-fluentd
+# @@Author: Fang.Li<surivlee@gmail.com>
+# @@Create Date: 2013-12-05 14:21:57
+# @@Modify Date: 2013-12-06 12:57:04
+# @@Function:
+#*********************************************************#
+
+
+import os
+import sys
+import time
+import libs.argparse as argparse
+from libs.config import readConfig
+from libs import umsgpack
+from libs import daemonize
+from libs.tcpsocket import TcpSocket
+from libs.collectorfluentd import CollectorFluentd
+
+
+umsgpack.compatibility = True  # Fluentd eats msgpack in old-style encoding.
+
+
+"""
+################################################################################
+IMPORTANT NOTICE:                                                              #
+Since someone are still using Python2.4 or earlier version, please be note     #
+that we should keep project Python2.4/2.6/2.7 compatible!                      #
+################################################################################
+
+"""
+
+
+def main(conf):
+    """Main loop with a socket instance"""
+    sock = TcpSocket(
+        host=conf.fluentd_host,
+        port=conf.fluentd_port,
+        timeout=conf.connection_timeout,
+    )
+
+    cf = CollectorFluentd(conf)
+    
+    while True:
+        outputs = cf.getPluginsOutput()
+        cf.write2Cache(outputs)
+        cf.sendAllCache(sock)
+        time.sleep(conf.reporting_interval)
+
+
+def configParse():
+    """Read command line arguments, and get config from configfile
+
+    If config file not exist or config can not be parsed, an exception will be
+    thrown out with a fatal error.
+
+    Returns:
+        An configuration object.
+    """
+    p = argparse.ArgumentParser(
+        usage='collector-fluentd -f [Configuration File Path]')
+
+    p.add_argument(
+        '-f',
+        '--config',
+        default="/etc/collector-fluentd.conf",
+        help="Path to configuration file, default to /etc/collector-fluentd.conf")
+
+    p.add_argument(
+        '-d',
+        '--daemonize',
+        default=False,
+        action="store_true",
+        help="Run as a background daemon.")
+
+    args = p.parse_args()
+
+    if not os.path.isfile(args.config):
+        print >> sys.stderr, "[ERR] Config file not exist:", args.config
+        sys.exit(1)
+
+    try:
+        conf = readConfig(args.config)
+    except Exception, ex:
+        print >> sys.stderr, "[ERR] Config could not be parsed:", str(ex)
+        sys.exit(1)
+
+    conf.daemonize = args.daemonize
+
+    return conf
+
+
+if __name__ == "__main__":
+
+    conf = configParse()
+
+    # We should push prog to background in daemon mode
+    if conf.daemonize:
+        daemonize.daemonize()
+    daemonize.writePid(conf.pid_file)
+
+    main(conf)
+
