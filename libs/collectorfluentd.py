@@ -5,7 +5,7 @@
 # @@ScriptName: collectorfluentd.py
 # @@Author: Fang.Li<surivlee@gmail.com>
 # @@Create Date: 2013-12-05 14:21:57
-# @@Modify Date: 2013-12-06 12:48:49
+# @@Modify Date: 2013-12-06 18:12:37
 # @@Function:
 #*********************************************************#
 
@@ -15,7 +15,7 @@ import time
 import signal
 import uuid
 import glob
-import umsgpack
+import msgpack_pure
 import daemonize
 from shelljob import proc
 from common import log
@@ -104,6 +104,8 @@ class CollectorFluentd(object):
 
         try:
             v = float(m[2])
+            if v == int(v):
+                v = int(v)
         except:
             return False
 
@@ -125,7 +127,7 @@ class CollectorFluentd(object):
                 tags[k] = addition[k]
 
         log("Write validated metric %s to local FS..." % m[0], -1)
-        return umsgpack.packb([m[0], int(m[1]), tags])
+        return msgpack_pure.packs([m[0], int(m[1]), tags])
 
     def write2Cache(self, outputs):
         fname = "".join((
