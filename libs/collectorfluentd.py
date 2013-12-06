@@ -5,7 +5,7 @@
 # @@ScriptName: collectorfluentd.py
 # @@Author: Fang.Li<surivlee@gmail.com>
 # @@Create Date: 2013-12-05 14:21:57
-# @@Modify Date: 2013-12-06 18:12:37
+# @@Modify Date: 2013-12-06 18:19:15
 # @@Function:
 #*********************************************************#
 
@@ -13,8 +13,9 @@
 import os
 import time
 import signal
-import uuid
 import glob
+import random
+import string
 import msgpack_pure
 import daemonize
 from shelljob import proc
@@ -135,7 +136,7 @@ class CollectorFluentd(object):
             self.conf.cache_file_prefix,
             str(int(time.time())),
             "_",
-            str(uuid.uuid1()),
+            ''.join(random.sample(string.ascii_letters + string.digits, 8)),
             ".dat",
         ))
         log("Writting current metrics to local FS...", -1)
