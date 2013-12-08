@@ -5,7 +5,7 @@
 # @@ScriptName: collectorfluentd.py
 # @@Author: Fang.Li<surivlee@gmail.com>
 # @@Create Date: 2013-12-05 14:21:57
-# @@Modify Date: 2013-12-06 18:38:42
+# @@Modify Date: 2013-12-08 15:37:31
 # @@Function:
 #*********************************************************#
 
@@ -16,6 +16,7 @@ import signal
 import glob
 import random
 import string
+import pickle
 import msgpack_pure
 import daemonize
 from shelljob import proc
@@ -144,18 +145,19 @@ class CollectorFluentd(object):
         log("Writting current metrics to local FS...", -1)
         log("Open cache file %s" % fname, -1)
 
-        fcache = open(fname, "wb")
+        valid_outputs = []
         for m in outputs:
             metric = self._getValidMetric(m, self.conf.tags)
             if metric:
-                fcache.write(metric + '\n')
+                valid_outputs.append(metric)
             else:
                 log("Invalid metric string: %s (IGNORED)" % m, 1)
-        fcache.close()
-
-        if os.path.getsize(fname) == 0:
-            log("No new metrics generated, removing current cache file.", 0)
-            os.remove(fname)
+        if valid_outputs:
+            fcache = open(fname, "wb")
+            pickle.dump(valid_outputs, fcache)
+            fcache.close()
+        else:
+            log("No new metrics generated, ignore.", 0)
 
     def logError(self, metric):
         err_msg = [" ".join((
@@ -176,7 +178,7 @@ class CollectorFluentd(object):
         cache_list = glob.glob(fname)
         cache_list.sort()
         if cache_list:
-            return cache_list[0], open(cache_list[0], "rb").read()
+            return cache_list[0], pickle.load(open(cache_list[0], "rb"))
         else:
             return None, None
 
@@ -188,7 +190,7 @@ class CollectorFluentd(object):
 
                 log("Sending cache file %s to server..." % os.path.basename(fname), -1)
 
-                for _msg in msg.strip("\n").split("\n"):
+                for _msg in msg:
                     if not sock.send(_msg):
                         self.logError("collector.error.send")
                         log("Could not connect to the fluentd server, metrics will be sent next time.", 2)
