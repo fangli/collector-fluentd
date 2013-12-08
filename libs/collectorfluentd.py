@@ -5,7 +5,7 @@
 # @@ScriptName: collectorfluentd.py
 # @@Author: Fang.Li<surivlee@gmail.com>
 # @@Create Date: 2013-12-05 14:21:57
-# @@Modify Date: 2013-12-08 15:37:31
+# @@Modify Date: 2013-12-08 17:39:01
 # @@Function:
 #*********************************************************#
 
@@ -97,7 +97,7 @@ class CollectorFluentd(object):
 
         return outputs
 
-    def _getValidMetric(self, metric, addition={}):
+    def _getValidMetric(self, metric, prefix, addition={}):
         m = metric.split()
 
         if len(m) < 3:
@@ -131,7 +131,7 @@ class CollectorFluentd(object):
                 tags[k] = addition[k]
 
         log("Write validated metric %s to local FS..." % m[0], -1)
-        return msgpack_pure.packs([m[0], int(m[1]), tags])
+        return msgpack_pure.packs([prefix + m[0], int(m[1]), tags])
 
     def write2Cache(self, outputs):
         fname = "".join((
@@ -147,7 +147,7 @@ class CollectorFluentd(object):
 
         valid_outputs = []
         for m in outputs:
-            metric = self._getValidMetric(m, self.conf.tags)
+            metric = self._getValidMetric(m, self.conf.metric_prefix, self.conf.tags)
             if metric:
                 valid_outputs.append(metric)
             else:

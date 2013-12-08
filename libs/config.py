@@ -5,7 +5,7 @@
 # @@ScriptName: config.py
 # @@Author: Felix Lee <surivlee@gmail.com>
 # @@Create Date: 11/18/2012
-# @@Modify Date: 2013-12-06 11:43:12
+# @@Modify Date: 2013-12-08 17:39:13
 # @@Function:
 #*********************************************************#
 
@@ -36,6 +36,7 @@ def readConfig(fname):
     _config_.log_level = config.get("main", "log_level").strip()
     _config_.log_file = config.get("main", "log_file").strip()
     _config_.pid_file = config.get("main", "pid_file").strip()
+    _config_.metric_prefix = config.get("main", "metric_prefix").strip()
     _config_.reporting_interval = config.getint("main", "reporting_interval")
     _config_.plugin_timeout = config.getint("main", "plugin_timeout")
 
