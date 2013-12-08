@@ -8,6 +8,12 @@ Notes
 
 Still in developing stage, use it at your own risk
 
+Releases
+--------
+
+We have launched the first alpha release, it's not for production use.
+Everything work well except losing data sometimes.
+
 
 Usage
 ---------
