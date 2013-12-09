@@ -5,7 +5,7 @@
 # @@ScriptName: collector-fluentd
 # @@Author: Fang.Li<surivlee@gmail.com>
 # @@Create Date: 2013-12-05 14:21:57
-# @@Modify Date: 2013-12-09 20:25:25
+# @@Modify Date: 2013-12-09 20:26:36
 # @@Function:
 #*********************************************************#
 
@@ -22,7 +22,7 @@ from libs.tcpsocket import TcpSocket
 from libs.collectorfluentd import CollectorFluentd
 
 
-__version__ = "1.2"
+__version__ = "1.3"
 
 
 """
