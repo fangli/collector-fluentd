@@ -5,7 +5,7 @@
 # @@ScriptName: collector-fluentd
 # @@Author: Fang.Li<surivlee@gmail.com>
 # @@Create Date: 2013-12-05 14:21:57
-# @@Modify Date: 2013-12-08 17:40:53
+# @@Modify Date: 2013-12-09 20:25:25
 # @@Function:
 #*********************************************************#
 
@@ -13,8 +13,10 @@
 import os
 import sys
 import time
+import traceback
 import libs.argparse as argparse
 from libs.config import readConfig
+from libs.common import log
 from libs import daemonize
 from libs.tcpsocket import TcpSocket
 from libs.collectorfluentd import CollectorFluentd
@@ -44,9 +46,13 @@ def main(conf):
     cf = CollectorFluentd(conf)
     
     while True:
-        outputs = cf.getPluginsOutput()
-        cf.write2Cache(outputs)
-        cf.sendAllCache(sock)
+        try:
+            outputs = cf.getPluginsOutput()
+            cf.write2Cache(outputs)
+            cf.sendAllCache(sock)
+        except:
+            cf.logError("collector.error.uncaught")
+            log(str(traceback.format_exc()), 2)
         time.sleep(conf.reporting_interval)
 
 
