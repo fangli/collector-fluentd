@@ -5,7 +5,7 @@
 # @@ScriptName: collectorfluentd.py
 # @@Author: Fang.Li<surivlee@gmail.com>
 # @@Create Date: 2013-12-05 14:21:57
-# @@Modify Date: 2013-12-08 17:39:01
+# @@Modify Date: 2013-12-10 13:40:51
 # @@Function:
 #*********************************************************#
 
@@ -199,5 +199,4 @@ class CollectorFluentd(object):
                 log("Successful sent metrics to server in cache file %s" % os.path.basename(fname), -1)
                 os.remove(fname)
             else:
-                break
-        return True
+                return True
