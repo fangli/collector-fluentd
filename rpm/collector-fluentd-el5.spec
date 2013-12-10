@@ -1,5 +1,5 @@
 Name:   collector-fluentd
-Version:        1.3.2
+Version:        1.3.3
 Release:        el5
 Summary:        collector-fluentd is a large-scale system metric collecting tool for fluentd
 

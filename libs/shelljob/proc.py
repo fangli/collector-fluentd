@@ -3,7 +3,6 @@
 	A mechanism to run subprocesses asynchronously and with non-blocking read.
 """
 import os
-import atexit
 import Queue
 import shlex
 import subprocess
@@ -56,15 +55,8 @@ class Group:
 			
 		block_thread = threading.Thread( target = block_read )
 		block_thread.daemon = True
+		block_thread.setDaemon(True)
 		block_thread.start()
-			
-		# kill child when parent dies
-		def premature_exit():
-			try: 
-				handle.terminate()
-			except:
-				pass # who cares why, we're exiting anyway (most likely since it is already terminated)
-		atexit.register( premature_exit )
 			
 		return handle
 		
