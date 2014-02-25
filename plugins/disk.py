@@ -108,13 +108,6 @@ def main():
         print("df.bytes.free %d %s mount=%s fstype=%s"
               % (ts, r.f_frsize * r.f_bfree, fs_file, fs_vfstype))
 
-        print("df.inodes.total %d %s mount=%s fstype=%s"
-              % (ts, r.f_files, fs_file, fs_vfstype))
-        print("df.inodes.used %d %s mount=%s fstype=%s"
-              % (ts, (r.f_files - r.f_ffree), fs_file, fs_vfstype))
-        print("df.inodes.free %d %s mount=%s fstype=%s"
-              % (ts, r.f_ffree, fs_file, fs_vfstype))
-
     sys.stdout.flush()
 
 
