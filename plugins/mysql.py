@@ -5,7 +5,7 @@
 # @@ScriptName: mysql.py
 # @@Author: Fang.Li<surivlee@gmail.com>
 # @@Create Date: 2013-07-09 10:57:34
-# @@Modify Date: 2013-12-06 11:46:38
+# @@Modify Date: 2014-02-25 11:59:57
 # @@Function: Statistics from a default MySQL instance
 #*********************************************************#
 
@@ -19,6 +19,9 @@ Note: this collector parses your MySQL "show global status", and outputs all
 import time
 import sys
 import subprocess
+
+
+IGNORE_KEYS = ["com.", "created."]
 
 
 def printStats(metric, ts, value):
@@ -72,7 +75,12 @@ def main():
     stats = getStats()
     ts = time.time()
     for st in stats.keys():
-        printStats(st, ts, stats[st])
+        is_ignore = False
+        for ignore in IGNORE_KEYS:
+            if (st.startswith(ignore)):
+                is_ignore = True
+        if not is_ignore:
+            printStats(st, ts, stats[st])
 
 if __name__ == "__main__":
     main()

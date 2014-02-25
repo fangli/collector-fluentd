@@ -5,7 +5,7 @@
 # @@ScriptName: sys.py
 # @@Author: Fang.Li<surivlee@gmail.com>
 # @@Create Date: 2013-07-09 16:40:48
-# @@Modify Date: 2013-12-06 11:46:46
+# @@Modify Date: 2014-02-25 12:25:50
 # @@Function:
 #*********************************************************#
 
@@ -34,7 +34,6 @@ def main():
     f_uptime = open("/proc/uptime", "r")
     f_meminfo = open("/proc/meminfo", "r")
     f_vmstat = open("/proc/vmstat", "r")
-    f_stat = open("/proc/stat", "r")
     f_loadavg = open("/proc/loadavg", "r")
     f_entropy_avail = open("/proc/sys/kernel/random/entropy_avail", "r")
 
@@ -55,14 +54,8 @@ def main():
         "memfree",
         "buffers",
         "cached",
-        "swapcached",
         "active",
         "inactive",
-        "swaptotal",
-        "swapfree",
-        "dirty",
-        "writeback",
-        "anonpages",
         "mapped",
     ]
     for line in f_meminfo:
@@ -83,48 +76,16 @@ def main():
                           "pswpout", "pgfault", "pgmajfault"):
             print "sys.vmstat.%s %d %s" % (m.group(1), ts, m.group(2))
 
-    # proc.stat
-    f_stat.seek(0)
-    ts = int(time.time())
-    for line in f_stat:
-        m = re.match("(\w+)\s+(.*)", line)
-        if not m:
-            continue
-        if m.group(1).startswith("cpu"):
-            cpu_m = re.match("cpu(\d+)", m.group(1))
-            if not cpu_m:
-                tags = ''
-                fields = m.group(2).split()
-                cpu_types = [
-                    'user', 'nice', 'system', 'idle', 'iowait',
-                    'irq', 'softirq', 'guest', 'guest_nice'
-                ]
-
-                for value, field_name in zip(fields, cpu_types):
-                    print "sys.stat.cpu %d %s type=%s%s" % (
-                        ts, value, field_name, tags)
-        elif m.group(1) == "intr":
-            print (
-                "sys.stat.intr %d %s"
-                % (ts, m.group(2).split()[0]))
-        elif m.group(1) == "ctxt":
-            print "sys.stat.ctxt %d %s" % (ts, m.group(2))
-        elif m.group(1) == "processes":
-            print "sys.stat.processes %d %s" % (ts, m.group(2))
-        elif m.group(1) == "procs_blocked":
-            print "sys.stat.procs_blocked %d %s" % (ts, m.group(2))
-
     f_loadavg.seek(0)
     ts = int(time.time())
     for line in f_loadavg:
         m = re.match("(\S+)\s+(\S+)\s+(\S+)\s+(\d+)/(\d+)\s+", line)
         if not m:
             continue
-        print "sys.loadavg.1min %d %s" % (ts, m.group(1))
-        print "sys.loadavg.5min %d %s" % (ts, m.group(2))
-        print "sys.loadavg.15min %d %s" % (ts, m.group(3))
-        print "sys.loadavg.runnable %d %s" % (ts, m.group(4))
-        print "sys.loadavg.total_threads %d %s" % (ts, m.group(5))
+        print "sys.load.1min %d %s" % (ts, m.group(1))
+        print "sys.load.5min %d %s" % (ts, m.group(2))
+        print "sys.load.15min %d %s" % (ts, m.group(3))
+        print "sys.load.total_threads %d %s" % (ts, m.group(5))
 
     f_entropy_avail.seek(0)
     ts = int(time.time())

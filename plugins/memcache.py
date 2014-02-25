@@ -5,7 +5,7 @@
 # @@ScriptName: memcache.py
 # @@Author: Fang.Li<surivlee@gmail.com>
 # @@Create Date: 2013-07-10 10:03:21
-# @@Modify Date: 2013-12-06 11:46:33
+# @@Modify Date: 2014-02-25 11:34:27
 # @@Function: collector plugin for memcache
 #*********************************************************#
 
@@ -16,8 +16,7 @@ import sys
 
 # Those are the stats we MUST collect at every COLLECTION_INTERVAL.
 IMPORTANT_STATS = [
-    "rusage_user", "rusage_system",
-    "curr_connections", "total_connections", "connection_structures",
+    "curr_connections", "connection_structures",
     "cmd_get", "cmd_set",
     "get_hits", "get_misses",
     "delete_misses", "delete_hits",
@@ -26,17 +25,8 @@ IMPORTANT_STATS = [
 ]
 IMPORTANT_STATS_SET = set(IMPORTANT_STATS)
 
-# Important things on a slab basis
-IMPORTANT_STATS_SLAB = [
-    "cas_hits", "cas_badval", "incr_hits", "decr_hits", "delete_hits",
-    "cmd_set", "get_hits", "free_chunks", "used_chunks", "total_chunks"
-]
-IMPORTANT_STATS_SLAB_SET = set(IMPORTANT_STATS_SLAB)
-
 # Stats that really don't belong to the TSDB.
-IGNORED_STATS_SET = set(["time", "uptime", "version", "pid"])
-IGNORED_STATS_SLAB_SET = set(["chunk_size", "chunks_per_page", "total_pages",
-                              "mem_requested", "free_chunks_end"])
+IGNORED_STATS_SET = set(["time", "uptime", "version", "pid", "rusage_user", "rusage_system","total_connections"])
 
 # TODO(tsuna): Don't hardcode those.
 DATASETS = {

@@ -5,13 +5,15 @@
 # @@ScriptName: mongo.py
 # @@Author: Fang.Li<surivlee@gmail.com>
 # @@Create Date: 2013-07-10 10:16:52
-# @@Modify Date: 2013-12-06 11:46:35
+# @@Modify Date: 2014-02-25 12:55:31
 # @@Function:
 # *********************************************************#
 
 
+import sys
 import time
 import urllib2
+
 try:
     from libs import minjson
 except ImportError:
@@ -39,7 +41,10 @@ def getServerStatus():
 
 def doData():
     ts = time.time()
-    ss = getServerStatus()
+    try:
+        ss = getServerStatus()
+    except:
+        sys.exit()
 
     # Get opcounters
     for k, v in ss["opcounters"].iteritems():

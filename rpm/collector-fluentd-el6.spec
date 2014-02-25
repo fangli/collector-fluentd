@@ -1,5 +1,5 @@
 Name:   collector-fluentd
-Version:        1.3.3
+Version:        1.4.0
 Release:        el6
 Summary:        collector-fluentd is a large-scale system metric collecting tool for fluentd
 
@@ -64,6 +64,9 @@ mkdir /tmp/collector-fluentd/ -p
 
 
 %changelog
+* Tue Feb 25 2014  Felix <surivlee@gmail.com>
+  - Reduce some useless metrics
+
 * Tue Dec 10 2013  Felix <surivlee@gmail.com>
   - Hanlder for signals
 

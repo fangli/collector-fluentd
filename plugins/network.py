@@ -5,7 +5,7 @@
 # @@ScriptName: network.py
 # @@Author: Fang.Li<surivlee@gmail.com>
 # @@Create Date: 2013-07-09 17:13:44
-# @@Modify Date: 2013-12-06 11:46:40
+# @@Modify Date: 2014-02-25 12:03:47
 # @@Function:
 #*********************************************************#
 
@@ -66,7 +66,7 @@ def main():
                 return "in"
 
         for i in xrange(16):
-            if stats[i] != "0":
+            if (stats[i] != "0") and (i == 0 or i == 8):
                 print ("net.%s.%s %d %s direction=%s"
                        % (FIELDS[i], intf, ts, stats[i], direction(i)))
 

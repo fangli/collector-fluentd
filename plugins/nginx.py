@@ -5,11 +5,12 @@
 # @@ScriptName: nginx.py
 # @@Author: Fang.Li<surivlee@gmail.com>
 # @@Create Date: 2013-07-10 11:02:09
-# @@Modify Date: 2013-12-06 11:46:42
+# @@Modify Date: 2014-02-25 12:59:37
 # @@Function:
 # *********************************************************#
 
 
+import sys
 import time
 import urllib2
 import re
@@ -50,7 +51,10 @@ def get_data(url):
 
 def main():
     ts = time.time()
-    status = get_data(NGINX_STATUS_URL)
+    try:
+        status = get_data(NGINX_STATUS_URL)
+    except:
+        sys.exit()
     for k, v in status.iteritems():
         printStats(k, ts, v)
 
