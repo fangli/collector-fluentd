@@ -59,7 +59,7 @@ mkdir /tmp/collector-fluentd/ -p
       # Any needed actions here on uninstalls
   else
       # Upgrade
-      /sbin/service collector-fluentd restart
+      echo "Stopped, do not forget to run collector-fluentd again"
   fi
 
 
