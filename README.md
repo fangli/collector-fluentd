@@ -11,6 +11,8 @@ Still in developing stage, use it at your own risk
 Releases
 --------
 
+1.5.0: Add GAUGE, COUNTER and DERIVE data type support
+
 We have launched the first alpha release, it's not for production use.
 Everything work well except losing data sometimes.
 

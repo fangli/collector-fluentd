@@ -5,7 +5,7 @@
 # @@ScriptName: memcache.py
 # @@Author: Fang.Li<surivlee@gmail.com>
 # @@Create Date: 2013-07-10 10:03:21
-# @@Modify Date: 2014-02-25 11:34:27
+# @@Modify Date: 2014-03-13 18:22:10
 # @@Function: collector plugin for memcache
 #*********************************************************#
 
@@ -23,12 +23,7 @@ IMPORTANT_STATS = [
     "bytes_read", "bytes_written", "bytes",
     "curr_items", "total_items", "evictions",
 ]
-IMPORTANT_STATS_SET = set(IMPORTANT_STATS)
 
-# Stats that really don't belong to the TSDB.
-IGNORED_STATS_SET = set(["time", "uptime", "version", "pid", "rusage_user", "rusage_system","total_connections"])
-
-# TODO(tsuna): Don't hardcode those.
 DATASETS = {
     11211: "11211",
     11212: "11212",
@@ -85,7 +80,7 @@ def main(args):
     stats = {}  # Maps a dataset name to a dict that maps a stats to a value.
 
     def print_stat(stat, dataset):
-        print ("memcache.%s %d %s db=%s"
+        print ("memcache.%s %d %s port=%s cf_datatype=counter"
                % (stat, stats[dataset]["time"], stats[dataset][stat], dataset))
 
     for dataset, sock in sockets.iteritems():
@@ -94,11 +89,6 @@ def main(args):
         # Print all the important stats first.
         for stat in IMPORTANT_STATS:
             print_stat(stat, dataset)
-
-        for stat in stats[dataset]:
-            if (stat not in IMPORTANT_STATS_SET      # Don't re-print them.
-                    and stat not in IGNORED_STATS_SET):  # Don't record those.
-                print_stat(stat, dataset)
 
     sys.stdout.flush()
 

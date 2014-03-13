@@ -5,7 +5,7 @@
 # @@ScriptName: collector-fluentd
 # @@Author: Fang.Li<surivlee@gmail.com>
 # @@Create Date: 2013-12-05 14:21:57
-# @@Modify Date: 2014-02-26 11:41:17
+# @@Modify Date: 2014-03-13 19:17:57
 # @@Function:
 #*********************************************************#
 
@@ -13,8 +13,8 @@
 import os
 import sys
 import time
-import traceback
 import signal
+import traceback
 import libs.argparse as argparse
 from libs.config import readConfig
 from libs.common import log
@@ -23,7 +23,7 @@ from libs.tcpsocket import TcpSocket
 from libs.collectorfluentd import CollectorFluentd
 
 
-__version__ = "1.4.1"
+__version__ = "1.5.0"
 
 
 """
@@ -64,6 +64,7 @@ def main(conf):
         log("Initialization done.")
     except:
         log("Fatal Error detected, unable to initial socket and collecting instance", 2)
+        log(str(traceback.format_exc()), 2)
         sys.exit(1)
 
 

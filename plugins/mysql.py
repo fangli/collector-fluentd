@@ -5,7 +5,7 @@
 # @@ScriptName: mysql.py
 # @@Author: Fang.Li<surivlee@gmail.com>
 # @@Create Date: 2013-07-09 10:57:34
-# @@Modify Date: 2014-02-25 11:59:57
+# @@Modify Date: 2014-03-13 15:48:07
 # @@Function: Statistics from a default MySQL instance
 #*********************************************************#
 
@@ -21,12 +21,78 @@ import sys
 import subprocess
 
 
-IGNORE_KEYS = ["com.", "created."]
+INCLUDE_KEYS = {
+    "questions": "counter",
+    "queries": "counter",
+    "innodb.log.write.requests": "counter",
+    "innodb.dblwr.pages.written": "counter",
+    "innodb.dblwr.writes": "counter",
+    "select.range": "counter",
+    "innodb.row.lock.time": "counter",
+    "bytes.sent": "counter",
+    "bytes.received": "counter",
+    "innodb.buffer.pool.pages.free": "gauge",
+    "innodb.buffer.pool.pages.data": "gauge",
+    "innodb.buffer.pool.pages.dirty": "gauge",
+    "innodb.buffer.pool.pages.flushed": "gauge",
+    "innodb.buffer.pool.pages.misc": "gauge",
+    "innodb.buffer.pool.pages.total": "gauge",
+    "innodb.buffer.pool.reads": "gauge",
+    "innodb.buffer.pool.write.requests": "counter",
+    "innodb.buffer.pool.read.requests": "counter",
+    "handler.write": "counter",
+    "handler.commit": "counter",
+    "handler.delete": "counter",
+    "handler.rollback": "counter",
+    "handler.update": "counter",
+    "handler.read.first": "counter",
+    "handler.read.key": "counter",
+    "handler.read.next": "counter",
+    "handler.read.prev": "counter",
+    "handler.read.rnd": "counter",
+    "handler.read.rnd.next": "counter",
+    "innodb.rows.read": "counter",
+    "aborted.clients": "counter",
+    "aborted.connects": "counter",
+    "connections": "counter",
+    "flush.commands": "gauge",
+    "innodb.data.fsyncs": "counter",
+    "innodb.data.read": "counter",
+    "innodb.data.written": "counter",
+    "innodb.data.reads": "counter",
+    "innodb.data.writes": "counter",
+    "innodb.pages.created": "counter",
+    "innodb.pages.read": "counter",
+    "innodb.pages.written": "counter",
+    "innodb.row.lock.time.avg": "gauge",
+    "innodb.row.lock.time.max": "gauge",
+    "innodb.row.lock.waits": "gauge",
+    "innodb.rows.deleted": "counter",
+    "innodb.rows.inserted": "counter",
+    "innodb.rows.updated": "counter",
+    "key.blocks.unused": "gauge",
+    "key.blocks.used": "gauge",
+    "key.read.requests": "counter",
+    "key.reads": "counter",
+    "key.write.requests": "counter",
+    "key.writes": "counter",
+    "max.used.connections": "gauge",
+    "open.files": "gauge",
+    "open.table.definitions": "gauge",
+    "open.tables": "gauge",
+    "select.scan": "counter",
+    "slow.queries": "counter",
+    "sort.rows": "counter",
+    "threads.cached": "gauge",
+    "threads.connected": "gauge",
+    "threads.created": "gauge",
+    "threads.running": "gauge",
+}
+    
 
-
-def printStats(metric, ts, value):
+def printStats(metric, ts, value, tag=""):
     if value is not None:
-        print "mysql.%s %i %s" % (metric, int(ts), str(value))
+        print "mysql.%s %i %s %s" % (metric, int(ts), str(value), tag)
 
 
 def getMysqlClient():
@@ -75,12 +141,8 @@ def main():
     stats = getStats()
     ts = time.time()
     for st in stats.keys():
-        is_ignore = False
-        for ignore in IGNORE_KEYS:
-            if (st.startswith(ignore)):
-                is_ignore = True
-        if not is_ignore:
-            printStats(st, ts, stats[st])
+        if st in INCLUDE_KEYS.keys():
+            printStats(st, ts, stats[st], "cf_datatype=" + INCLUDE_KEYS[st].strip())
 
 if __name__ == "__main__":
     main()

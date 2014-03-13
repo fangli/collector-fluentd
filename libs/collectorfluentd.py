@@ -5,7 +5,7 @@
 # @@ScriptName: collectorfluentd.py
 # @@Author: Fang.Li<surivlee@gmail.com>
 # @@Create Date: 2013-12-05 14:21:57
-# @@Modify Date: 2013-12-10 13:40:51
+# @@Modify Date: 2014-03-13 17:53:02
 # @@Function:
 #*********************************************************#
 
@@ -21,6 +21,7 @@ import msgpack_pure
 import daemonize
 from shelljob import proc
 from common import log
+from dataparser import Dataparser
 
 
 class CollectorFluentd(object):
@@ -41,6 +42,7 @@ class CollectorFluentd(object):
 
     def __init__(self, conf):
         self.conf = conf
+        self.data_parser = Dataparser(conf)
         log("Collector-fluentd daemon started, PID: %i" % daemonize.getPid())
 
     def _executePlugins(self, files):
@@ -113,6 +115,8 @@ class CollectorFluentd(object):
         except:
             return False
 
+        cf_datatype = "gauge"
+
         tags = {}
         for t in m[3:]:
             _t = t.split("=")
@@ -122,16 +126,35 @@ class CollectorFluentd(object):
                 return False
             if not _t[1].strip():
                 return False
-            tags[_t[0].strip()] = _t[1].strip()
+            if _t[0] == "cf_datatype":
+                cf_datatype = _t[1].lower()
+            else:
+                tags[_t[0].strip()] = _t[1].strip()
 
         tags["_value"] = v
+
+        # Like RRD database, the CF datatype could be one of GAUGE, COUNTER and DERIVE
 
         if addition:
             for k in addition.keys():
                 tags[k] = addition[k]
 
-        log("Write validated metric %s to local FS..." % m[0], -1)
-        return msgpack_pure.packs([prefix + m[0], int(m[1]), tags])
+        pack = [prefix + m[0], int(m[1]), tags]
+        if cf_datatype == "gauge":
+            pack = self.data_parser.gauge(pack)
+        elif cf_datatype == "counter":
+            pack = self.data_parser.counter(pack)
+        elif cf_datatype == "derive":
+            pack = self.data_parser.derive(pack)
+        else:
+            return False
+
+        if pack == None:
+            log("Metric %s does not have a valid history data, waiting for next circle..." % m[0], 1)
+            return None
+        else:
+            log("Write validated metric %s to local FS..." % m[0], -1)
+            return msgpack_pure.packs(pack)
 
     def write2Cache(self, outputs):
         fname = "".join((
@@ -150,7 +173,7 @@ class CollectorFluentd(object):
             metric = self._getValidMetric(m, self.conf.metric_prefix, self.conf.tags)
             if metric:
                 valid_outputs.append(metric)
-            else:
+            elif metric == False:
                 log("Invalid metric string: %s (IGNORED)" % m, 1)
         if valid_outputs:
             fcache = open(fname, "wb")

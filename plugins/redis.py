@@ -5,7 +5,7 @@
 # @@ScriptName: redis.py
 # @@Author: Fang.Li<surivlee@gmail.com>
 # @@Create Date: 2013-07-09 10:57:34
-# @@Modify Date: 2013-12-06 11:46:44
+# @@Modify Date: 2014-03-13 19:13:06
 # @@Function: Statistics from a default Redis instance
 # *********************************************************#
 
@@ -21,7 +21,6 @@ import subprocess
 
 
 METRICS = [
-    "bgrewriteaof_in_progress", "bgsave_in_progress", "blocked_clients",
     "changes_since_last_save", "connected_clients", "expired_keys",
     "keyspace_hits", "keyspace_misses", "total_commands_processed",
     "total_connections_received", "uptime_in_seconds", "used_cpu_sys",
@@ -125,7 +124,12 @@ def main():
     for port in instances.keys():
         stats = getStats(port)
         for st in stats.keys():
-            printStats(st, ts, stats[st], "port=%i" % port)
+            if st == "total.connections.received":
+                printStats('connections.persec', ts, stats[st], "cf_datatype=counter port=%i" % port)
+            elif st == "total.commands.processed":
+                printStats('commands.persec', ts, stats[st], "cf_datatype=counter port=%i" % port)
+            else:
+                printStats(st, ts, stats[st], "port=%i" % port)
 
 if __name__ == "__main__":
     main()
