@@ -5,7 +5,7 @@
 # @@ScriptName: network.py
 # @@Author: Fang.Li<surivlee@gmail.com>
 # @@Create Date: 2013-07-09 17:13:44
-# @@Modify Date: 2014-03-13 18:47:38
+# @@Modify Date: 2014-03-14 14:31:35
 # @@Function:
 #*********************************************************#
 
@@ -67,8 +67,8 @@ def main():
 
         for i in xrange(16):
             if (stats[i] != "0") and (i == 0 or i == 8):
-                print ("net.%s.%s %d %s direction=%s cf_datatype=counter"
-                       % (FIELDS[i], intf, ts, stats[i], direction(i)))
+                print ("net.%s.%s.%s %d %s cf_datatype=counter"
+                       % (FIELDS[i], intf, direction(i), ts, stats[i]))
 
     sys.stdout.flush()
 
