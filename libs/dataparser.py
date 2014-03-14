@@ -5,7 +5,7 @@
 # @@ScriptName: dataparser.py
 # @@Author: Fang.Li<surivlee@gmail.com>
 # @@Create Date: 2013-12-05 14:21:57
-# @@Modify Date: 2014-03-13 18:07:34
+# @@Modify Date: 2014-03-14 12:18:53
 # @@Function:
 #*********************************************************#
 
@@ -19,8 +19,14 @@ class Dataparser(object):
         self.conf = conf
         self.path = conf.cache_path + '/caches/'
         if not os.path.isdir(self.path):
-            os.mkdir(conf.cache_path)
-            os.mkdir(self.path)
+            try:
+                os.mkdir(conf.cache_path)
+            except:
+                pass
+            try:
+                os.mkdir(self.path)
+            except:
+                pass
 
     def __getHash(self, s):
         try: 
