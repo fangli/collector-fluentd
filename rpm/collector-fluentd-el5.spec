@@ -64,6 +64,9 @@ mkdir /tmp/collector-fluentd/ -p
 
 
 %changelog
+* Fri Mar 14 2014  Felix <surivlee@gmail.com>
+  - Add datatype support
+
 * Tue Feb 25 2014  Felix <surivlee@gmail.com>
   - Reduce some useless metrics
 
