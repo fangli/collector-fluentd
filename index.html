@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Collector-fluentd : A distributed metric collection framework using fluentd protocol" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Collector-fluentd</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/fangli/collector-fluentd">View on GitHub</a>
+
+          <h1 id="project_title">Collector-fluentd</h1>
+          <h2 id="project_tagline">A distributed metric collection framework using fluentd protocol</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/fangli/collector-fluentd/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/fangli/collector-fluentd/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="collector-fluentd" class="anchor" href="#collector-fluentd"><span class="octicon octicon-link"></span></a>Collector-fluentd</h1>
+
+<p>A distributed metric collection framework using fluentd protocol</p>
+
+<hr><h2>
+<a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Introduction</h2>
+
+<p>Collector-fluentd gathers metrics from varieties of plugins and send them to a fluentd server. Plugins are standard executable binaries or scripts which have metrics outputs in specific format.</p>
+
+<h2>
+<a name="run" class="anchor" href="#run"><span class="octicon octicon-link"></span></a>Run</h2>
+
+<pre><code>[root@my_host plugins]# collector-fluentd --help
+usage: collector-fluentd -f [Configuration File Path]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f CONFIG, --config CONFIG
+                        Path to configuration file, default to /etc/collector-
+                        fluentd.conf
+  -d, --daemonize       Run as a background daemon.
+  -v, --version         Show version information of collector-fluentd.
+</code></pre>
+
+<h2>
+<a name="configurations" class="anchor" href="#configurations"><span class="octicon octicon-link"></span></a>Configurations</h2>
+
+<p><strong>1. Section Main</strong></p>
+
+<p><code>pid_file</code> is the file which contains PID of running daemon</p>
+
+<p><code>plugin_path</code> points to the folder which contains plugins. Default to <code>[install path]/plugins</code> when leaving it empty</p>
+
+<p><code>log_file</code> points to a file in which collector-fluentd write logs</p>
+
+<p><code>log_level</code> is the logs level, optional values are <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>CRITICAL</code></p>
+
+<p><code>reporting_interval</code> is the most important config which decide the collecting interval, units of seconds</p>
+
+<p><code>plugin_timeout</code> decides the execution timeout when triggering a plugin. if a plugin didn't exit in specific time, it will be terminated by framework</p>
+
+<p><code>metric_prefix</code> is the global prefix. this value will be appended to metrics name automatically. For example, if the the output of a plugin is <code>mysql.connections 1395132494  863</code> and <code>metric_prefix=ops.</code> the real metric name sending to fluentd will be <code>ops.mysql.connections</code></p>
+
+<p>``</p>
+
+<p><strong>2. Section Tags</strong></p>
+
+<p>You could define your personality global tags here, for server recognizing.</p>
+
+<p>Example:</p>
+
+<pre><code>[tags]
+instanceid=i-xxxxxxx
+area=asia
+type=mysql
+</code></pre>
+
+<p>The tags in this section will be merged with the tags of plugins' output.</p>
+
+<p><strong>3. Section Cache</strong></p>
+
+<p><code>cache_path</code> points to the cache file folder. when fluentd server is down, collector-fluentd will save metric data locally. <strong>be sure you have created the folder manually!</strong></p>
+
+<p><code>cache_file_prefix</code> is the prefix of cache file name</p>
+
+<p><strong>4. Section output</strong></p>
+
+<p><code>fluentd_host</code> is the remote fluentd server, Both hostname, FQDN and IP are acceptable.</p>
+
+<p><code>fluentd_port</code> is the remote port of fluentd instance</p>
+
+<p><code>connection_timeout</code> is the connection timeout between local and remote fluentd server.</p>
+
+<h2>
+<a name="plugins" class="anchor" href="#plugins"><span class="octicon octicon-link"></span></a>Plugins</h2>
+
+<p>Plugins are standard executable scripts. the output should like as below,</p>
+
+<pre><code>mysql.connections 1395132494 863
+sys.load.5min 1395132494 3.2
+net.send 1395132494 32847921 if=eth0
+net.recv 1395132494 32847921 if=eth0
+memcache.connections 1395132494 179 port=11211
+...
+</code></pre>
+
+<p>One metric per line, tags are optional, blank space separated:</p>
+
+<p><code>[Metric.Name] [UNIX Timestamp] [Value] [k1=v1](optional) [k2=v2](optional)  ...</code></p>
+
+<p><strong>Be sure you have the plugin script executable permission</strong> <em>(chmod +x my_plugin.sh)</em></p>
+
+<h2>
+<a name="special-tags" class="anchor" href="#special-tags"><span class="octicon octicon-link"></span></a>Special Tags</h2>
+
+<p><code>cf_datatype</code> is a special tag in collector-fluentd, it could be set to one of <code>GAUGE</code>(default), <code>COUNTER</code> and <code>DERIVE</code>, for values where you are interested in its value compared to the time</p>
+
+<p>If you have a counter(like network traffic or mysql connection in total), you could use this special tag as below</p>
+
+<pre><code>net.send 1395132494 32847921 if=eth0 cf_datatype=counter
+</code></pre>
+
+<p>See <a href="http://munin-monitoring.org/wiki/fieldname.type">http://munin-monitoring.org/wiki/fieldname.type</a> for details.</p>
+
+<h2>
+<a name="notes" class="anchor" href="#notes"><span class="octicon octicon-link"></span></a>Notes</h2>
+
+<p>Still in developing stage, use it at your own risk</p>
+
+<h2>
+<a name="releases" class="anchor" href="#releases"><span class="octicon octicon-link"></span></a>Releases</h2>
+
+<p>1.5.0: Add GAUGE, COUNTER and DERIVE data type support</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Collector-fluentd maintained by <a href="https://github.com/fangli">fangli</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
