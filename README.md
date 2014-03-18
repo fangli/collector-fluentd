@@ -9,7 +9,7 @@ A distributed metric collection framework using fluentd protocol
 
 Collector-fluentd gathers metrics from varieties of plugins and send them to a fluentd server. Plugins are standard executable binaries or scripts which have metrics outputs in specific format.
 
-## Run
+## Usage
 
 ```
 [root@my_host plugins]# collector-fluentd --help
