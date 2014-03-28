@@ -1,5 +1,5 @@
 Name:   collector-fluentd
-Version:        1.5.2
+Version:        1.5.3
 Release:        el5
 Summary:        collector-fluentd is a large-scale system metric collecting tool for fluentd
 
@@ -64,6 +64,9 @@ mkdir /tmp/collector-fluentd/ -p
 
 
 %changelog
+* Fri Mar 14 2014  Felix <surivlee@gmail.com>
+  - Fixed memcache datatype
+
 * Fri Mar 14 2014  Felix <surivlee@gmail.com>
   - Add datatype support
 

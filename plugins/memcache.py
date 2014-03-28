@@ -5,7 +5,7 @@
 # @@ScriptName: memcache.py
 # @@Author: Fang.Li<surivlee@gmail.com>
 # @@Create Date: 2013-07-10 10:03:21
-# @@Modify Date: 2014-03-13 18:22:10
+# @@Modify Date: 2014-03-28 18:53:36
 # @@Function: collector plugin for memcache
 #*********************************************************#
 
@@ -15,13 +15,18 @@ import sys
 
 
 # Those are the stats we MUST collect at every COLLECTION_INTERVAL.
-IMPORTANT_STATS = [
-    "curr_connections", "connection_structures",
-    "cmd_get", "cmd_set",
+COUNTER_STATS = [
+    "cmd_get", "cmd_set", "total_connections",
     "get_hits", "get_misses",
     "delete_misses", "delete_hits",
     "bytes_read", "bytes_written", "bytes",
-    "curr_items", "total_items", "evictions",
+    "total_items", "evictions",
+]
+
+GAUGE_STATS = [
+    "curr_connections",
+    "curr_items",
+    "uptime",
 ]
 
 DATASETS = {
@@ -79,16 +84,18 @@ def main(args):
 
     stats = {}  # Maps a dataset name to a dict that maps a stats to a value.
 
-    def print_stat(stat, dataset):
-        print ("memcache.%s %d %s port=%s cf_datatype=counter"
-               % (stat, stats[dataset]["time"], stats[dataset][stat], dataset))
+    def print_stat(stat, dataset, datatype):
+        print ("memcache.%s %d %s port=%s cf_datatype=%s"
+               % (stat, stats[dataset]["time"], stats[dataset][stat], dataset, datatype))
 
     for dataset, sock in sockets.iteritems():
         stats[dataset] = collect_stats(sock)
 
         # Print all the important stats first.
-        for stat in IMPORTANT_STATS:
-            print_stat(stat, dataset)
+        for stat in COUNTER_STATS:
+            print_stat(stat, dataset, "counter")
+        for stat in GAUGE_STATS:
+            print_stat(stat, dataset, "gauge")
 
     sys.stdout.flush()
 
